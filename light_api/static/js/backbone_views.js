@@ -140,7 +140,7 @@ LoginStateView = Backbone.View.extend({
         var self = this;
         if(this.authenticated){
             facebookGetMe();
-            this.model.fetch(
+            this.model.fetch({
                 reset: true,
                 success: function(){
                     self.loggedInCallback();
@@ -148,7 +148,7 @@ LoginStateView = Backbone.View.extend({
                 error: function(){
                     alert("error on update login");
                 }
-            );
+            });
         }
         this.render();
     },
