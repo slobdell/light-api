@@ -1,0 +1,250 @@
+<!doctype html>
+<!--[if lt IE 7 ]><html lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]><html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]><html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]><html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--><html lang="en" class="no-js"> <!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<meta name="author" content="">
+<meta name="keywords" content="">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title></title>
+
+<!-- main JS libs -->
+<script src="js/libs/modernizr.min.js"></script>
+<script src="js/libs/jquery-1.10.0.js"></script>
+<script src="js/libs/jquery-ui.min.js"></script>
+<script src="js/libs/bootstrap.min.js"></script>
+
+<!-- Style CSS -->
+<link href="css/bootstrap.css" media="screen" rel="stylesheet">
+<link href="style.css" media="screen" rel="stylesheet">
+
+<!-- Audio Player  -->
+<link href="css/jplayer.css" rel="stylesheet">
+<script src="js/jquery.jplayer.min.js"></script>
+<script src="js/jplayer.playlist.min.js"></script>
+<script type="text/javascript">
+    //<![CDATA[
+    $(document).ready(function(){
+
+        new jPlayerPlaylist({
+            jPlayer: "#jquery_jplayer_1",
+            cssSelectorAncestor: "#jp_container_1"
+        }, [
+            {
+                title:"<img src='images/temp/music-player1.png' alt='' /><ul><li class='item-artist'><span>01.</span>Rudimental</li><li class='item-song'>Waiting All Night (feat. Ella Eyre)</li><li class='item-album'>Folllow Your Heart | 2013</li></ul>",
+                mp3:"http://www.jplayer.org/audio/mp3/TSP-05-Your_face.mp3",
+                oga:"http://www.jplayer.org/audio/ogg/TSP-05-Your_face.ogg"
+            },
+            {
+                title:"<img src='images/temp/music-player2.png' alt='' /><ul><li class='item-artist'><span>02.</span>Daft Punk</li><li class='item-song'>Get Lucky (ft. Pharell Williams)</li><li class='item-album'>Tron Legacy | 2013</li></ul>",
+                mp3:"http://www.jplayer.org/audio/mp3/TSP-07-Cybersonnet.mp3",
+                oga:"http://www.jplayer.org/audio/ogg/TSP-07-Cybersonnet.ogg"
+            },
+            {
+                title:"<img src='images/temp/music-player3.png' alt='' /><ul><li class='item-artist'><span>03.</span>Justin Timberlake</li><li class='item-song'>Mirrors</li><li class='item-album'>20/20 Experience | 2013</li></ul>",
+                mp3:"http://www.jplayer.org/audio/mp3/Miaow-07-Bubble.mp3",
+                oga:"http://www.jplayer.org/audio/ogg/Miaow-07-Bubble.ogg"
+            }
+        ], {
+            swfPath: "js",
+            supplied: "oga, mp3",
+            wmode: "window",
+            smoothPlayBar: false,
+            keyEnabled: false
+        });
+    });
+    //]]>
+</script>
+
+<!-- scripts -->
+<script src="js/general.js"></script>
+
+<!-- Include all needed stylesheets and scripts here -->
+
+
+
+
+
+<!--[if lt IE 9]><script src="js/respond.min.js"></script><![endif]-->
+<!--[if gte IE 9]>
+<style type="text/css">
+    .gradient {filter: none !important;}
+</style>
+<![endif]-->
+</head>
+
+<body>
+    <div class="body_wrap">
+        <div class="container">
+
+            <div class="content" role="main">
+                <div class="row">
+                    <div class="col-md-2">
+                    </div>
+                    <div class="col-md-8" style="text-align: center;">
+                        <!-- Website Menu -->
+                        <div class="dropdown-wrap boxed-velvet">
+                            <ul class="dropdown inner clearfix">
+                                <li class="menu-level-0"><a href="#"><span>Account</span></a></li>
+                                <li class="menu-level-0"><a href="#"><span>About Us</span></a>
+                                    <ul class="submenu-1">
+                                        <li class="menu-level-1"><a href="#">Portfolio</a></li>
+                                        <li class="menu-level-1"><a href="#">Testimonials</a></li>
+                                        <li class="menu-level-1"><a href="#">Contacts</a>
+                                            <ul class="submenu-2">
+                                                <li class="menu-level-2"><a href="#">Gallery images</a></li>
+                                                <li class="menu-level-2"><a href="#">OneByOne Slider</a></li>
+                                                <li class="menu-level-2"><a href="#">Video in header</a></li>
+                                                <li class="menu-level-2"><a href="#">Image &amp; Video Slider</a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="menu-level-0"><a href="#"><span>Settings</span></a>
+                                    <ul class="submenu-1">
+                                        <li class="menu-level-1"><a href="#">Privacy Policy</a></li>
+                                        <li class="menu-level-1"><a href="#">Copyright</a></li>
+                                        <li class="menu-level-1"><a href="#">Terms of Service</a>
+                                            <ul class="submenu-2">
+                                                <li class="menu-level-2"><a href="#">Gallery images</a></li>
+                                                <li class="menu-level-2"><a href="#">OneByOne Slider</a></li>
+                                                <li class="menu-level-2"><a href="#">Video in header</a></li>
+                                                <li class="menu-level-2"><a href="#">Image &amp; Video Slider</a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="menu-level-0"><a href="#"><span>Log Out</span></a></li>
+                            </ul>
+                        </div>
+                        <!--/ Website Menu -->
+                    </div>
+                    <div class="col-md-2">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-4">
+                        <!-- Buttons -->
+                        <div class="buttons-wrap" style="text-align: center;">
+                            <div class="buttons">
+                                <a href="#" class="btn btn-pagination"><span>What Is This Thing?</span></a>
+                                <!-- SBL need to add modal shit here -->
+                            </div>
+
+                        </div>
+                        <!--/ Buttons -->
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4" style="text-align: center;">
+                    <h6 class="foo">Channel Name</h6>
+                        <!-- Ribbons -->
+                        <div class="ribbon ribbon-red"><span>Methalop</span></div>
+                        <!--/ Ribbons -->
+
+                        <!-- SBL -->
+                        <div class="tabs_framed styled" style="margin-top: 15px;">
+                        <div class="inner">
+                            <div class="tab-content clearfix">
+                                <div class="tab-pane clearfix fade in active" id="events">
+                                    <!-- <h4>10 august 2012</h4> -->
+                                    <p>
+                                    Grab as many iPhones as you can with the "XXXX" app and subscribe to the channel here.  You'll get a sweet light show that will leave you amped and wanting more.
+                                    </p>
+                                    <a href="#" class="see-more"><span>Get the iOS App</span></a>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+
+
+
+                    </div>
+                    <div class="col-md-4">
+                        <!-- Widget Audio Player -->
+                        <div class="widget-container widget-audio">
+                            <div class="inner">
+                                <!-- jplayer-->
+                                <div id="jquery_jplayer_1" class="jp-jplayer"></div>
+                                <div id="jp_container_1" class="jp-audio">
+                                    <div class="jp-type-playlist">
+                                        <div class="jp-playlist">
+                                            <ul class="jp-playlist-inner">
+                                                <li></li>
+                                            </ul>
+                                        </div>
+                                        <div class="jp-gui jp-interface">
+                                            <div class="song_title_wrap">
+                                                <div class="song_title"></div>
+                                            </div>
+                                            <div class="jp-controls-wrap">
+                                                <div class="jp-progress">
+                                                    <div class="jp-seek-bar">
+                                                        <div class="jp-play-bar"></div>
+                                                    </div>
+                                                </div>
+                                                <ul class="jp-controls">
+                                                    <li><a href="javascript:;" class="jp-mute" tabindex="1" title="mute">mute</a></li><!--
+                                                            --><li><a href="javascript:;" class="jp-unmute" tabindex="1" title="unmute">unmute</a></li><!--
+                                                            --><li><a href="javascript:;" class="jp-previous disabled" tabindex="1">previous</a></li><!--
+                                                            --><li><a href="javascript:;" class="jp-play" tabindex="1">play</a></li><!--
+                                                            --><li><a href="javascript:;" class="jp-pause" tabindex="1">pause</a></li><!--
+                                                            --><li><a href="javascript:;" class="jp-next" tabindex="1">next</a></li><!--
+                                                            --><li><a href="javascript:;" class="jp-stop" tabindex="1">stop</a></li><!--
+                                                            --><li><a href="javascript:;" class="jp-repeat" tabindex="1" title="repeat">repeat</a></li><!--
+                                                            --><li><a href="javascript:;" class="jp-repeat-off" tabindex="1" title="repeat off">repeat off</a></li><!--
+                                                            --><li><a href="javascript:;" class="jp-volume-max" tabindex="1" title="max volume">max volume</a></li><!--
+                                                            --><li><a href="javascript:;" class="jp-shuffle" tabindex="1" title="shuffle">shuffle</a></li><!--
+                                                            --><li><a href="javascript:;" class="jp-shuffle-off" tabindex="1" title="shuffle off">shuffle off</a></li>
+                                                </ul>
+                                                <div class="jp-volume-bar">
+                                                    <div class="jp-volume-bar-value"></div>
+                                                </div>
+                                                <div class="jp-current-time"></div>
+                                                <div class="jp-duration"></div>
+                                            </div>
+                                        </div>
+                                        <div class="jp-no-solution">
+                                            <span>Update Required</span>
+                                            To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--/ jplayer-->
+                            </div>
+                        </div>
+                        <!-- Widget Audio Player -->
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tagcloud ">
+                            <a href="#" class="tag-link-1" style="margin: 0;" title="2 topics"><span>Song 1</span></a>
+                        </div>
+                        <div class="tagcloud ">
+                            <a href="#" class="tag-link-1" style="margin: 0;" title="2 topics"><span>Some other song</span></a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!--/ container -->
+    </div>
+</body>
+</html>
+    <!-- start Mixpanel --><script type="text/javascript">(function(f,b){if(!b.__SV){var a,e,i,g;window.mixpanel=b;b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.track_charge people.clear_charges people.delete_user".split(" ");
+    for(g=0;g<i.length;g++)f(c,i[g]);b._i.push([a,e,d])};b.__SV=1.2;a=f.createElement("script");a.type="text/javascript";a.async=!0;a.src="//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";e=f.getElementsByTagName("script")[0];e.parentNode.insertBefore(a,e)}})(document,window.mixpanel||[]);
+    mixpanel.init("{{ mixpanel_token }}");</script><!-- end Mixpanel -->
+
+    <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/backbone-min.js' %}"></script>
+    <script type="text/javascript" src="//www.parsecdn.com/js/parse-1.3.3.min.js"></script>
+    <script type="text/javascript">
+        Parse.initialize("{{ parse_app_id }}", "{{ parse_key }}");
+    </script>
