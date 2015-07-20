@@ -104,71 +104,6 @@ LoginView = Backbone.View.extend({
             }
         });
     },
-    clickSubmit: function(){
-        globalTextView.render();
-        var email = this.$(".email-input").val();
-        var password = this.$(".password-input").val();
-        var isValidEmail = validateEmail(email);
-        if(!isValidEmail){
-            this.$(".error-area").html("Input a valid E-Mail address");
-        }
-        else if (password.length < 7){
-            this.$(".error-area").html("Password needs to be at least 7 characters");
-        }
-        else {
-            this.$(".loading-icon").show();
-            this.$(".sign-up-continue").hide();
-            var self = this;
-            this.signUp(email, password, function(){
-                self.$(".loading-icon").hide();
-                self.$(".sign-up-continue").show();
-                self.callback();
-            });
-
-        }
-    },
-    signUp: function(email, password, callback){
-        email = email.toLowerCase();
-        var user = new Parse.User();
-        user.set("username", email);
-        user.set("password", password);
-        user.set("email", email);
-        user.signUp(null, {
-            success: function(user) {
-                $.ajax({
-                    url: '/api/signup/',
-                    data: {
-                        email: email,
-                        username: email
-                    },
-                    cache: false,
-                    dataType: 'json',
-                    traditional: true,
-                    type: 'POST',
-                    contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-                    success: function(response){
-                        user.set("access_token", response.access_token);
-                        user.save();
-                        if (_.isFunction(callback)) {
-                            callback();
-                        }
-                        Backbone.history.navigate('!confirmation/' + email, {trigger: true});
-                    },
-                    error: function(data){
-                        self.$(".loading-icon").hide();
-                        self.$(".sign-up-continue").show();
-                        alert("error");
-                    }
-                });
-            },
-            error: function(user, error) {
-                self.$(".error-area").html(error.message);
-                if (_.isFunction(callback)) {
-                    callback();
-                }
-            }
-        });
-    },
     render: function(options){
         this.$el.html(this.template());
         return this;
@@ -176,24 +111,66 @@ LoginView = Backbone.View.extend({
 });
 
 
+LoginStateView = Backbone.View.extend({
+    el: $("#login-state"),
+    events: {
+        "click a": "toggleLogInState"
+    },
+    initialize: function(model){
+        this.model = model;
+    },
+    updateLoginState: function(){
+        alert("calling update login sate");
+        this.authenticated = (Parse.User.current() !== null);
+        if(this.authenticated){
+            alert("user is authenticated");
+            facebookGetMe();
+            this.model.fetch();
+        }
+        this.render();
+    },
+    toggleLogInState:function(){
+        if(this.authenticated){
+            Parse.User.logOut()
+            this.authenticated = false;
+            $('.profile-circular').hide();
+            this.render();
+            if(window.location.hash === ''){
+                // already at home page
+                Backbone.history.navigate('!login', {trigger: true});
+            } else {
+                Backbone.history.navigate('', {trigger: true});
+            }
+        } else {
+            alert("trying to go to some login view?");
+        }
+    },
+    render: function(){
+        if(this.authenticated){
+            alert("render authenticated");
+        } else {
+            alert("render not authenticadted");
+        }
+    }
+});
 IndexRouter = Backbone.Router.extend({
     routes: {
         "": "defaultRoute"
     },
     updateLoginState: function(){
-        //this.loginStateView.updateLoginState();
+        this.loginStateView.updateLoginState();
     },
     initialize: function(){
         this.model = new User();
         this.loggedIn = false;
-        //this.loginStateView = new LoginStateView(this.model);
-        //this.loginStateView.updateLoginState();
+        this.loginStateView = new LoginStateView(this.model);
+        this.loginStateView.updateLoginState();
     },
     defaultRoute: function(path){
         removeHash();
         var self = this;
         this.loginView = new LoginView(this.model, function(){
-            //self.loginStateView.updateLoginState();
+            self.loginStateView.updateLoginState();
             alert("CB reached");
         });
         this.loginView.render();
