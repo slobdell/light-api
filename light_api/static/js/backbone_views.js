@@ -42,7 +42,6 @@ LoginView = Backbone.View.extend({
         var self = this;
         Parse.FacebookUtils.logIn("email", {
             success: function(user) {
-                globalTextView.render();
                 if (!user.existed()) {
                     // user signed up and logged in  through facebook
                     $.ajax({
