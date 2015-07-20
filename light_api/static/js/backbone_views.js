@@ -4,6 +4,32 @@ function removeHash () {
 }
 
 
+function facebookGetMe(){
+    FB.api('/v2.1/me?fields=id,email', function(response) {
+        var facebook_id = response.id;
+        var facebookEmail = response.email || '';
+        var parseUser = Parse.User.current();
+        parseUser.set("facebook_id", facebook_id);
+        parseUser.set("facebook_email", facebookEmail);
+        parseUser.save()
+    });
+    updateProfilePicture();
+}
+
+
+function updateProfilePicture() {
+    FB.api('/v2.1/me/picture?redirect=false', function(response){
+        var profilePictureUrl = response.data.url;
+        console.log("this part worked");
+        console.log(profilePictureUrl);
+        /*
+        $('.profile-circular').css({'background-image':'url(' + profilePictureUrl +')'});
+        $('.profile-circular').show();
+        */
+    });
+}
+
+
 User = Backbone.Model.extend({
     url: function(){
         if(!Parse.User.current()){
@@ -60,7 +86,7 @@ LoginView = Backbone.View.extend({
                             user.save();
                             facebookGetMe()
                             self.callback();
-                            Backbone.history.navigate('!goal', {trigger: true});
+                            console.log("finished with facebook stuff");
                         },
                         error: function(data){
                             self.$(".loading-icon").hide();
