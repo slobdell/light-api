@@ -45,16 +45,16 @@ class User(object):
         return User(_user)
 
     @classmethod
-    def create(cls, username):
-        _user = _User.objects.create(
-            username=username,
-        )
-        return User(_user)
-
-    @classmethod
     def get_or_create_by_username(cls, username):
         try:
             _user = _User.objects.get(username=username)
         except ObjectDoesNotExist:
             return True, cls.create_from_username(username)
         return False, User(_user)
+
+    @classmethod
+    def create_from_username(cls, username):
+        _user = _User.objects.create(
+            username=username,
+        )
+        return User(_user)
