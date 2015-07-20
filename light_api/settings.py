@@ -96,7 +96,9 @@ if os.getenv("I_AM_IN_DEV_ENV"):
     }
 else:
     import dj_database_url
-    DATABASES['default'] =  dj_database_url.config()
+    DATABASES = {
+        'default': dj_database_url.config()
+    }
     '''
     DATABASES = {
         'default': {
