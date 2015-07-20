@@ -137,9 +137,18 @@ LoginStateView = Backbone.View.extend({
     },
     updateLoginState: function(){
         this.authenticated = (Parse.User.current() !== null);
+        var self = this;
         if(this.authenticated){
             facebookGetMe();
-            this.model.fetch();
+            this.model.fetch(
+                reset: true,
+                success: function(){
+                    self.loggedInCallback();
+                },
+                error: function(){
+                    alert("error on update login");
+                }
+            );
         }
         this.render();
     },
