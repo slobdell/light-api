@@ -53,6 +53,21 @@ User = Backbone.Model.extend({
 });
 
 
+ChannelView = Backbone.View.extend({
+    el: $("#login-and-channel-area"),
+    events: {
+    },
+    initialize: function(model){
+        this.model = model;
+        this.template = _.template($("#channel-view").html());
+    },
+    render: function(options){
+        this.$el.html(this.template());
+        return this;
+    }
+});
+
+
 LoginView = Backbone.View.extend({
     // TODO rename this to some other shit
     el: $("#login-and-channel-area"),
@@ -116,14 +131,13 @@ LoginStateView = Backbone.View.extend({
     events: {
         "click a": "toggleLogInState"
     },
-    initialize: function(model){
+    initialize: function(model, loggedInCallback){
         this.model = model;
+        this.loggedInCallback = loggedInCallback;
     },
     updateLoginState: function(){
-        alert("calling update login sate");
         this.authenticated = (Parse.User.current() !== null);
         if(this.authenticated){
-            alert("user is authenticated");
             facebookGetMe();
             this.model.fetch();
         }
@@ -134,6 +148,7 @@ LoginStateView = Backbone.View.extend({
             Parse.User.logOut()
             this.authenticated = false;
             $('.profile-circular').hide();
+            alert("need to add logout action");
             this.render();
             if(window.location.hash === ''){
                 // already at home page
@@ -142,7 +157,7 @@ LoginStateView = Backbone.View.extend({
                 Backbone.history.navigate('', {trigger: true});
             }
         } else {
-            alert("trying to go to some login view?");
+            this.loggedInCallback();
         }
     },
     render: function(){
@@ -157,13 +172,14 @@ IndexRouter = Backbone.Router.extend({
     routes: {
         "": "defaultRoute"
     },
-    updateLoginState: function(){
-        this.loginStateView.updateLoginState();
-    },
     initialize: function(){
         this.model = new User();
         this.loggedIn = false;
-        this.loginStateView = new LoginStateView(this.model);
+        var self = this
+        this.channelView = new ChannelView(this.model);
+        this.loginStateView = new LoginStateView(this.model, function(){
+            self.channelView.render();
+        });
         this.loginStateView.updateLoginState();
     },
     defaultRoute: function(path){
@@ -171,7 +187,6 @@ IndexRouter = Backbone.Router.extend({
         var self = this;
         this.loginView = new LoginView(this.model, function(){
             self.loginStateView.updateLoginState();
-            alert("CB reached");
         });
         this.loginView.render();
 
