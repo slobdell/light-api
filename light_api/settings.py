@@ -49,6 +49,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'light_api.access_token',
+    'light_api.user'
 )
 
 MIDDLEWARE_CLASSES = (
