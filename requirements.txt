@@ -2,3 +2,8 @@ Django==1.8.3
 boto==2.38.0
 requests==2.7.0
 wsgiref==0.1.2
+
+dj-database-url==0.3.0
+dj-static==0.0.6
+gunicorn==19.1.1
+static==0.4
