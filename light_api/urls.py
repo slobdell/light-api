@@ -1,3 +1,5 @@
+import os
+
 """light_api URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -24,3 +26,7 @@ urlpatterns = [
     url(r'^api/signup/', api.signup, name="signup"),
     url(r'^api/user/', api.user, name="user"),
 ]
+
+if os.environ.get("I_AM_IN_DEV_ENV"):
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+    urlpatterns += staticfiles_urlpatterns()

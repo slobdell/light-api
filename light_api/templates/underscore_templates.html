@@ -12,18 +12,38 @@
 <script type="text/html" id="channel-view">
     <h6 class="foo">Channel Name</h6>
     <!-- Ribbons -->
-    <div class="ribbon ribbon-red"><span>Methalop</span></div>
+
+    <% if(editState === CHANNEL_STATES.NO_EDIT) { %>
+        <div class="ribbon ribbon-red"><span><%= channelName %> <a href="#" class="edit"><i style="margin-left: 10px;" class="fa fa-pencil-square-o"></i></a></span></div>
+    <% } else if(editState === CHANNEL_STATES.EDIT_NEW) { %>
+        <span><input type="text"/><span>
+        <div style="margin-top: 10px;">
+            <a href="#" class="save btn btn-pagination" hidefocus="true" style="outline: none; opacity: 1;"><span>Save</span></a>
+        </div>
+    <% } else if(editState === CHANNEL_STATES.EDIT_EXISTING) { %>
+        <span><input type="text" value="<%= channelName %>"/><span>
+        <div style="margin-top: 10px;">
+            <a href="#" class="save btn btn-pagination" hidefocus="true" style="outline: none; opacity: 1;"><span>Save</span></a>
+            <a href="#" class="cancel btn btn-pagination btn-black" hidefocus="true" style="outline: none; opacity: 1;"><span>Cancel</span></a>
+        </div>
+    <% } %>
+
     <!--/ Ribbons -->
 
     <div class="tabs_framed styled" style="margin-top: 15px;">
         <div class="inner">
             <div class="tab-content clearfix">
                 <div class="tab-pane clearfix fade in active" id="events">
-                    <!-- <h4>10 august 2012</h4> -->
+                    <% if(editState === CHANNEL_STATES.EDIT_NEW) { %>
                     <p>
-                    Grab as many iPhones as you can with the "XXXX" app and subscribe to the channel here.  You'll get a sweet light show that will leave you amped and wanting more.
+                        Start by inputting your own unique channel name for you or other users to subscribe to!
                     </p>
-                    <a href="#" class="see-more"><span>Get the iOS App</span></a>
+                    <% }  else { %>
+                        <p>
+                        Grab as many iPhones as you can with the "XXXX" app and subscribe to the channel here.  You'll get a sweet light show that will leave you amped and wanting more.
+                        </p>
+                        <a href="#" class="see-more"><span>Get the iOS App</span></a>
+                    <% } %>
                 </div>
             </div>
         </div>

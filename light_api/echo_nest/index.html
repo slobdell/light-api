@@ -6,6 +6,26 @@
         <script type="text/javascript" src="jquery-2.1.4.min.js"></script>
 
         <script type="text/javascript">
+            function shuffle(array) {
+                var currentIndex = array.length, temporaryValue, randomIndex ;
+
+                // While there remain elements to shuffle...
+                while (0 !== currentIndex) {
+
+                    // Pick a remaining element...
+                    randomIndex = Math.floor(Math.random() * currentIndex);
+                    currentIndex -= 1;
+
+                    // And swap it with the current element.
+                    temporaryValue = array[currentIndex];
+                    array[currentIndex] = array[randomIndex];
+                    array[randomIndex] = temporaryValue;
+                }
+
+                return array;
+            }
+        </script>
+        <script type="text/javascript">
             var MIN_CONFIDENCE = 0.1;
             var MIN_DECIBELS = -50;
             var JITTER_TIME = 2000;
@@ -95,9 +115,10 @@
                     if(this.numChannels === 0){
                         return [this.baseChannelName + "_broadcast"];
                     }
-                    // TODO make this return a different set depending on the pitch
-                    var midpoint = parseInt(this.numChannels / 2, 10);
-                    return this.channelNames.slice(0, midpoint);
+                    var clone = channelNames.slice(0);
+                    shuffle(clone);
+                    var midpoint = Math.ceil(this.numChannels / 2);
+                    return clone.slice(0, midpoint);
                 }
             });
 

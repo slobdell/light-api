@@ -20,14 +20,19 @@ function facebookGetMe(){
 function updateProfilePicture() {
     FB.api('/v2.1/me/picture?redirect=false', function(response){
         var profilePictureUrl = response.data.url;
-        console.log("this part worked");
-        console.log(profilePictureUrl);
         /*
         $('.profile-circular').css({'background-image':'url(' + profilePictureUrl +')'});
         $('.profile-circular').show();
         */
     });
 }
+
+
+var CHANNEL_STATES = {
+    NO_EDIT: 1,
+    EDIT_EXISTING: 2,
+    EDIT_NEW: 3
+};
 
 
 User = Backbone.Model.extend({
@@ -56,13 +61,44 @@ User = Backbone.Model.extend({
 ChannelView = Backbone.View.extend({
     el: $("#login-and-channel-area"),
     events: {
+        "click .save": "save",
+        "click .edit": "startEdit",
+        "click .cancel": "cancelEdit"
     },
     initialize: function(model){
         this.model = model;
         this.template = _.template($("#channel-view").html());
+        this.editState = CHANNEL_STATES.NO_EDIT;
+        this.listenTo(this.model, "sync", this.updateState);
+    },
+    save: function(){
+        var inputChannel = $("input").val();
+        this.model.set("channel_name", inputChannel);
+        this.model.save();
+    },
+    updateState: function(){
+        if(this.model.get("channel_name") === null){
+            this.editState = CHANNEL_STATES.EDIT_NEW;
+        } else {
+            this.editState = CHANNEL_STATES.NO_EDIT;
+        }
+        this.render();
+    },
+    cancelEdit: function(){
+        this.editState = CHANNEL_STATES.NO_EDIT;
+        this.render();
+    },
+    startEdit: function(){
+        this.editState = CHANNEL_STATES.EDIT_EXISTING;
+        this.render();
     },
     render: function(options){
-        this.$el.html(this.template());
+        var renderData = {
+            editState: this.editState,
+            channelName: this.model.get("channel_name")
+        };
+        this.$el.html(this.template(renderData));
+        this.$("input").focus();
         return this;
     }
 });
@@ -101,7 +137,6 @@ LoginView = Backbone.View.extend({
                             user.save();
                             facebookGetMe()
                             self.callback();
-                            console.log("finished with facebook stuff");
                         },
                         error: function(data){
                             self.$(".loading-icon").hide();
@@ -110,8 +145,7 @@ LoginView = Backbone.View.extend({
                         }
                     });
                 } else {
-                    // user logged in with facebook
-                    Backbone.history.navigate('', {trigger: true});
+                    self.callback();
                 }
             },
             error: function(user, error) {
@@ -156,24 +190,24 @@ LoginStateView = Backbone.View.extend({
         if(this.authenticated){
             Parse.User.logOut()
             this.authenticated = false;
-            $('.profile-circular').hide();
-            alert("need to add logout action");
+            //$('.profile-circular').hide();
             this.render();
-            if(window.location.hash === ''){
-                // already at home page
-                Backbone.history.navigate('!login', {trigger: true});
-            } else {
-                Backbone.history.navigate('', {trigger: true});
-            }
+            Backbone.history.navigate('!login', {trigger: true});
         } else {
             this.loggedInCallback();
         }
     },
     render: function(){
         if(this.authenticated){
-            alert("render authenticated");
+            $(".top-nav").append("<li class='log-out menu-level-0'><a href='#'><span>Log Out</span></a></li>");
+            $(".help").addClass("btn-black");
+            var self = this;
+            $(".log-out").on("click", function(){
+                self.toggleLogInState();
+            });
         } else {
-            alert("render not authenticadted");
+            $(".help").removeClass("btn-black");
+            $(".log-out").remove();
         }
     }
 });
@@ -190,13 +224,12 @@ IndexRouter = Backbone.Router.extend({
             self.channelView.render();
         });
         this.loginStateView.updateLoginState();
-    },
-    defaultRoute: function(path){
-        removeHash();
-        var self = this;
         this.loginView = new LoginView(this.model, function(){
             self.loginStateView.updateLoginState();
         });
+    },
+    defaultRoute: function(path){
+        removeHash();
         this.loginView.render();
 
         if(!Parse.User.current()){
