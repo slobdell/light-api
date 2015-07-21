@@ -84,7 +84,10 @@ def user(request):
 @requires_post
 def _update_user(request, user=None, access_token=None):
     post_data = request.POST or json.loads(request.body)
-    post_data = post_data  # pyflakes for now
+    try:
+        user.update_channel_name(post_data['channel_name'])
+    except ValueError:
+        return render_to_json({"error": "That channel is taken"}, status=420)
     return render_to_json({"access_token": access_token}, status=200)
 
 
@@ -94,3 +97,29 @@ def _get_user(request, user=None):
         return render_to_json({}, status=400)
     user_json = user.to_json()
     return render_to_json(user_json)
+
+
+def upload_video(request):
+    # need to add some kind of auth here...
+    from light_api.utils.boto_client import BotoClient
+    from light_api.utils.echo_nest_rest_client import EchoNestRestClient
+
+    if request.method != "POST":
+        raise Http404
+    uploaded_file = request.FILES['file']
+
+    file_type = uploaded_file.content_type
+    file_type = file_type
+    # validate file_type here
+    # upload to boto!
+    AWS_BUCKET_NAME = "lobbdawg"
+    FILE_DIR = "audio_files"
+    import uuid
+    filename = FILE_DIR + "/" + str(uuid.uuid4()) + ".mp3"
+    filename_url = BotoClient(AWS_BUCKET_NAME).upload(filename, uploaded_file)
+    analysis_json = EchoNestRestClient().upload_file(filename_url)
+    analysis_json = analysis_json
+    return render_to_json({
+        "worked": filename_url,
+        "analysis_json": analysis_json,
+    })

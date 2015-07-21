@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^$', views.home, name='home'),
     url(r'^api/signup/', api.signup, name="signup"),
     url(r'^api/user/', api.user, name="user"),
+    url(r'^api/upload_video', api.upload_video, name="upload-video"),
 ]
 
 if os.environ.get("I_AM_IN_DEV_ENV"):

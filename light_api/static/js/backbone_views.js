@@ -34,6 +34,12 @@ var CHANNEL_STATES = {
     EDIT_NEW: 3
 };
 
+var PLAYLIST_STATES = {
+    UPLOAD_NOT_ALLOWED: 1,
+    UPLOAD_GRAY: 2,
+    UPLOAD_PRIMARY: 3
+};
+
 
 User = Backbone.Model.extend({
     url: function(){
@@ -58,6 +64,76 @@ User = Backbone.Model.extend({
 });
 
 
+PlayListView = Backbone.View.extend({
+    el: $("#playlist-area"),
+    events: {
+        "click .upload": "clickChooseFile",
+        "change #upfile": "uploadFileChanged",
+    },
+    initialize: function(model){
+        this.model = model;
+        this.template = _.template($("#playlist-view").html());
+        this.updateState();
+        this.listenTo(this.model, "change", this.updateState);
+
+        this.formData = new FormData();
+        this.filename = "";
+        this.fileUploaded = false;
+    },
+    clickChooseFile: function(){
+        this.$("#upfile").click();
+        this.$(".upload").hide();
+    },
+    uploadFileChanged: function(){
+        // need to double check this on iphone
+        var file = this.$('input[name="upfile"]')[0].files[0];
+        if (!(typeof file === "undefined")){
+            this.filename = file.name;
+            this.formData = new FormData();
+            this.formData.append('file', file);
+            this.fileUploaded = true;
+        }
+        this.render();
+        var self = this;
+        $.ajax({
+            url: '/api/upload_video/',
+            data: this.formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'POST',
+            timeout: 60000, // sets timeout to 60 seconds
+            success: function(response){
+                alert("worked")
+                self.$(".upload").show();
+            },
+            error: function(data){
+                alert("fail")
+            }
+        });
+    },
+    updateState: function(){
+        if(typeof this.model.get("username") === "undefined"){
+            this.playlistState = PLAYLIST_STATES.UPLOAD_NOT_ALLOWED;
+        } else if(this.model.get("channel_name") === null){
+            this.playlistState = PLAYLIST_STATES.UPLOAD_GRAY;
+        } else {
+            this.playlistState = PLAYLIST_STATES.UPLOAD_PRIMARY;
+        }
+        this.render();
+    },
+    render: function(){
+        var renderData = {
+            filename: this.filename,
+            fileUploaded: this.fileUploaded,
+            playlistState: this.playlistState
+        };
+        this.$el.html(this.template(renderData));
+        return this;
+    }
+});
+
+
 ChannelView = Backbone.View.extend({
     el: $("#login-and-channel-area"),
     events: {
@@ -74,7 +150,11 @@ ChannelView = Backbone.View.extend({
     save: function(){
         var inputChannel = $("input").val();
         this.model.set("channel_name", inputChannel);
-        this.model.save();
+        this.model.save(null, {
+            error: function(){
+                alert("Channel name already exists.  Pick a different one.")
+            }
+        });
     },
     updateState: function(){
         if(this.model.get("channel_name") === null){
@@ -203,6 +283,7 @@ LoginStateView = Backbone.View.extend({
             $(".help").addClass("btn-black");
             var self = this;
             $(".log-out").on("click", function(){
+                self.model.clear();
                 self.toggleLogInState();
             });
         } else {
@@ -227,10 +308,12 @@ IndexRouter = Backbone.Router.extend({
         this.loginView = new LoginView(this.model, function(){
             self.loginStateView.updateLoginState();
         });
+        this.playListView = new PlayListView(this.model);
     },
     defaultRoute: function(path){
         removeHash();
         this.loginView.render();
+        this.playListView.render();
 
         if(!Parse.User.current()){
             //used is not logged in

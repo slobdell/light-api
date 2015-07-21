@@ -53,3 +53,26 @@
 <script type="text/html" id="login-view">
 <img class="fb-login-btn" src="{% static 'images/facebook_login.png' %}" style="width: 100%; margin-top: 50px; cursor: pointer;"/>
 </script>
+<script type="text/html" id="playlist-view">
+    <% if(playlistState === PLAYLIST_STATES.UPLOAD_NOT_ALLOWED) {  %>
+    <% } else if(playlistState === PLAYLIST_STATES.UPLOAD_GRAY) {  %>
+        <a href="#" class="upload btn btn-pagination btn-black" hidefocus="true" style="outline: none; opacity: 1;"><span>Upload MP3</span></a>
+    <% } else if(playlistState === PLAYLIST_STATES.UPLOAD_PRIMARY) {  %>
+        <a href="#" class="upload btn btn-pagination" hidefocus="true" style="outline: none; opacity: 1;"><span>Upload MP3</span></a>
+    <% }%>
+
+    <div style="margin-top: 10px;">
+        <div class="tagcloud ">
+            <a href="#" class="tag-link-1" style="margin: 0;" title="2 topics"><span>Song 1</span></a>
+        </div>
+        <div class="tagcloud ">
+            <a href="#" class="tag-link-1" style="margin: 0;" title="2 topics"><span>Some other song</span></a>
+        </div>
+    </div>
+    <form action="." method="POST" enctype="multipart/form-data">
+        <input type="file" id="upfile" name="upfile" type="file" value="upload" style="visibility: hidden;" accept="audio/mp3"/>
+        <p>
+            <%= filename %>
+        </p>
+    </form>
+</script>

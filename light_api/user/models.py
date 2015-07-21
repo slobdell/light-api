@@ -28,6 +28,16 @@ class User(object):
             'channel_name': self._user.channel_name,
         }
 
+    def update_channel_name(self, channel_name):
+        conflict = _User.objects.filter(
+            channel_name=channel_name
+        ).exclude(id=self._user.id).exists()
+        if conflict:
+            raise ValueError("Channel Conflict")
+
+        self._user.channel_name = channel_name
+        self._user.save()
+
     @classmethod
     def get_by_username(cls, username):
         try:
