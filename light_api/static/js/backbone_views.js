@@ -41,6 +41,38 @@ var PLAYLIST_STATES = {
 };
 
 
+var PlayingSong = Backbone.Model.extend({
+    constructor: function (){
+        var attrs = [{
+            'track_url': "",
+            'artwork_url': "",
+            'song_name': '',
+            'artist_name': ''
+        }];
+        Backbone.Model.apply(this, attrs);
+    }
+});
+
+
+Song = Backbone.Model.extend({
+});
+
+
+SongCollection = Backbone.Collection.extend({
+    url: function(){
+        if(!Parse.User.current() || !Parse.User.current().get('access_token')){
+            return null;
+        }
+        var encodedParams = $.param({
+            username: Parse.User.current().get('username'),
+            access_token: Parse.User.current().get('access_token')
+        });
+        return '/api/songs/?' + encodedParams;
+    },
+    model: Song
+});
+
+
 User = Backbone.Model.extend({
     url: function(){
         if(!Parse.User.current()){
@@ -70,11 +102,14 @@ PlayListView = Backbone.View.extend({
         "click .upload": "clickChooseFile",
         "change #upfile": "uploadFileChanged",
     },
-    initialize: function(model){
+    initialize: function(model, songCollection){
         this.model = model;
         this.template = _.template($("#playlist-view").html());
+        this.songCollection = songCollection;
         this.updateState();
         this.listenTo(this.model, "change", this.updateState);
+        this.listenTo(this.songCollection, "sync", this.render);
+        this.listenTo(this.songCollection, "add", this.render);
 
         this.formData = new FormData();
         this.filename = "";
@@ -87,6 +122,7 @@ PlayListView = Backbone.View.extend({
     uploadFileChanged: function(){
         // need to double check this on iphone
         var file = this.$('input[name="upfile"]')[0].files[0];
+
         if (!(typeof file === "undefined")){
             this.filename = file.name;
             this.formData = new FormData();
@@ -95,19 +131,27 @@ PlayListView = Backbone.View.extend({
         }
         this.render();
         var self = this;
+
+        var username = Parse.User.current().get('username');
+        var access_token = Parse.User.current().get('access_token');
+        this.formData.append('username', username);
+        this.formData.append('access_token', access_token);
+        this.$(".loader").show();
         $.ajax({
             url: '/api/upload_video/',
-            data: this.formData,
+            data: self.formData,
             cache: false,
             contentType: false,
             processData: false,
             type: 'POST',
-            timeout: 60000, // sets timeout to 60 seconds
+            timeout: 60000 * 3, // sets timeout to 60 seconds
             success: function(response){
-                alert("worked")
                 self.$(".upload").show();
+                self.songCollection.add(response);
+                self.$(".loader").hide();
             },
             error: function(data){
+                self.$(".loader").hide();
                 alert("fail")
             }
         });
@@ -123,7 +167,9 @@ PlayListView = Backbone.View.extend({
         this.render();
     },
     render: function(){
+        console.log(this.songCollection.toJSON());
         var renderData = {
+            songCollection: this.songCollection.toJSON(),
             filename: this.filename,
             fileUploaded: this.fileUploaded,
             playlistState: this.playlistState
@@ -197,8 +243,10 @@ LoginView = Backbone.View.extend({
     },
     facebookLogin: function(){
         var self = this;
+        this.$(".loader").show();
         Parse.FacebookUtils.logIn("email", {
             success: function(user) {
+                self.$(".loader").hide();
                 if (!user.existed()) {
                     // user signed up and logged in  through facebook
                     $.ajax({
@@ -219,6 +267,7 @@ LoginView = Backbone.View.extend({
                             self.callback();
                         },
                         error: function(data){
+                            self.$(".loader").hide();
                             self.$(".loading-icon").hide();
                             self.$(".sign-up-continue").show();
                             alert("error");
@@ -292,23 +341,27 @@ LoginStateView = Backbone.View.extend({
         }
     }
 });
+
 IndexRouter = Backbone.Router.extend({
     routes: {
         "": "defaultRoute"
     },
     initialize: function(){
         this.model = new User();
+        this.playingSong = new PlayingSong();
         this.loggedIn = false;
-        var self = this
+        var self = this;
         this.channelView = new ChannelView(this.model);
+        this.songCollection = new SongCollection();
+        this.playListView = new PlayListView(this.model, this.songCollection);
         this.loginStateView = new LoginStateView(this.model, function(){
             self.channelView.render();
+            self.songCollection.fetch();
         });
         this.loginStateView.updateLoginState();
         this.loginView = new LoginView(this.model, function(){
             self.loginStateView.updateLoginState();
         });
-        this.playListView = new PlayListView(this.model);
     },
     defaultRoute: function(path){
         removeHash();

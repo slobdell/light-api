@@ -2393,3 +2393,12 @@ input[type="password"]:focus{
 .badges{margin-bottom: 50px;}
 .ribbons{background: url(images/ribbons-shadow.png) 0 0 no-repeat; padding-top: 26px; padding-left: 4px; height: 206px; position: relative; top:-26px;}
 .ribbons .ribbon{margin-bottom: 4px; display: block;}
+
+.loader {
+    background: url('../static/images/vynil3.gif');
+    background-size: 100% auto;
+    height: 32px;
+    width: 32px;
+    margin: 16px;
+    display: none; /* inline-block;*/
+}

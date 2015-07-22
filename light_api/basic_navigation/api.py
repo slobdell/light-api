@@ -1,10 +1,20 @@
 import json
+import os
+import uuid
 
+from cStringIO import StringIO
 from django.http import Http404
 from django.http import HttpResponse
+from mutagen import File
 
-from light_api.user.models import User
 from light_api.access_token.models import AccessToken
+from light_api.song.models import Song
+from light_api.user.models import User
+from light_api.utils.boto_client import BotoClient
+from light_api.utils.echo_nest_rest_client import EchoNestRestClient
+
+AWS_BUCKET_NAME = "lobbdawg"
+FILE_DIR = "audio_files"
 
 
 def render_to_json(response_obj, context={}, content_type="application/json", status=200):
@@ -99,27 +109,52 @@ def _get_user(request, user=None):
     return render_to_json(user_json)
 
 
-def upload_video(request):
-    # need to add some kind of auth here...
-    from light_api.utils.boto_client import BotoClient
-    from light_api.utils.echo_nest_rest_client import EchoNestRestClient
+@requires_post
+def upload_video(request, user=None, access_token=None):
 
     if request.method != "POST":
         raise Http404
     uploaded_file = request.FILES['file']
-
     file_type = uploaded_file.content_type
     file_type = file_type
     # validate file_type here
-    # upload to boto!
-    AWS_BUCKET_NAME = "lobbdawg"
-    FILE_DIR = "audio_files"
-    import uuid
-    filename = FILE_DIR + "/" + str(uuid.uuid4()) + ".mp3"
-    filename_url = BotoClient(AWS_BUCKET_NAME).upload(filename, uploaded_file)
-    analysis_json = EchoNestRestClient().upload_file(filename_url)
-    analysis_json = analysis_json
-    return render_to_json({
-        "worked": filename_url,
-        "analysis_json": analysis_json,
-    })
+    unique_identifier = str(uuid.uuid4())
+    song_url = _upload_song(unique_identifier, uploaded_file)
+    artwork_url = _upload_artwork(unique_identifier, uploaded_file)
+
+    analysis_json = EchoNestRestClient().upload_file(song_url)
+    song = Song.create(user, analysis_json, song_url, artwork_url)
+    return render_to_json(song.to_json())
+
+
+def _upload_song(unique_identifier, song_file):
+    song_filename = FILE_DIR + "/" + unique_identifier + ".mp3"
+    boto_client = BotoClient(AWS_BUCKET_NAME)
+    song_url = boto_client.upload(song_filename, song_file)
+    song_file.seek(0)
+    return song_url
+
+
+def _upload_artwork(unique_identifier, song_file):
+    temp_filename = "tmp_" + str(uuid.uuid4())
+    with open(temp_filename, "w+") as f:
+        f.write(song_file.read())
+
+    mutagen_file = File(temp_filename)
+    artwork = mutagen_file.tags['APIC:'].data
+    image_file = StringIO()
+    image_file.write(artwork)
+    image_file.seek(0)
+    os.remove(temp_filename)
+
+    artwork_filename = FILE_DIR + "/" + unique_identifier + ".jpg"
+    boto_client = BotoClient(AWS_BUCKET_NAME)
+    artwork_url = boto_client.upload(artwork_filename, image_file)
+    song_file.seek(0)
+    return artwork_url
+
+
+@requires_auth
+def songs(request, user=None):
+    songs = Song.get_for_user(user)
+    return render_to_json([song.to_json() for song in songs])
