@@ -74,7 +74,7 @@
             <% for(var i=0; i < songCollection.length; i++) { %>
             <% var song = songCollection[i]; %>
                 <div class="tagcloud ">
-                    <a href="#" class="tag-link-1" style="margin: 0;" title="2 topics"><span><%= song.artist_name %> - <%= song.track_name %></span></a>
+                    <a href="#" class="tag-link-1 playable-song" style="margin: 0;" title="2 topics"><span id="song_<%= song.id %>"><%= song.artist_name %> - <%= song.track_name %></span></a>
             </div>
 
             <% } %>

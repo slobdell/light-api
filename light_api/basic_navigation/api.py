@@ -123,7 +123,7 @@ def upload_video(request, user=None, access_token=None):
     artwork_url = _upload_artwork(unique_identifier, uploaded_file)
 
     analysis_json = EchoNestRestClient().upload_file(song_url)
-    song = Song.create(user, analysis_json, song_url, artwork_url)
+    song = Song.create(user, analysis_json, artwork_url, song_url)
     return render_to_json(song.to_json())
 
 

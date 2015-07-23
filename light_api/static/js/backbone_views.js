@@ -101,9 +101,11 @@ PlayListView = Backbone.View.extend({
     events: {
         "click .upload": "clickChooseFile",
         "change #upfile": "uploadFileChanged",
+        "click .playable-song": "songClick",
     },
-    initialize: function(model, songCollection){
+    initialize: function(model, songCollection, playingSong){
         this.model = model;
+        this.playingSong = playingSong;
         this.template = _.template($("#playlist-view").html());
         this.songCollection = songCollection;
         this.updateState();
@@ -114,6 +116,27 @@ PlayListView = Backbone.View.extend({
         this.formData = new FormData();
         this.filename = "";
         this.fileUploaded = false;
+    },
+    songClick: function(evt){
+        var idString = evt.target.id;
+        var splitArray = idString.split("_");
+        var selectedSong = null;
+        if(splitArray[0] === "song"){
+            var songId = parseInt(splitArray[1], 10);
+            for(var i=0; i<this.songCollection.length; i++){
+                var model = this.songCollection.models[i];
+                if(model.get("id") === songId){
+                    selectedSong = model;
+                    break;
+                }
+            }
+        }
+        this.playingSong.set("track_url", selectedSong.get("track_url"));
+        this.playingSong.set("artwork_url", selectedSong.get("artwork_url"));
+        this.playingSong.set("song_name", selectedSong.get("track_name"));
+        this.playingSong.set("artist_name", selectedSong.get("artist_name"));
+        this.playingSong.trigger("change");
+        //alert("trigger");
     },
     clickChooseFile: function(){
         this.$("#upfile").click();
@@ -289,6 +312,30 @@ LoginView = Backbone.View.extend({
 });
 
 
+MusicPlayerView = Backbone.View.extend({
+    el: $("#music-player"),
+    events: {
+        "click .jp-play": "clickPlay"
+    },
+    clickPlay: function(){
+    },
+    initialize: function(playingSong){
+        this.playingSong = playingSong;
+        this.listenTo(this.playingSong, "change", this.render);
+    },
+    render: function(){
+        var artworkUrl = this.playingSong.get("artwork_url");
+        // TODO move to template
+        var artistHTML = "<ul><li class='item-artist jp-playlist-current'>" + this.playingSong.get("artist_name") + "</li>";
+        artistHTML += "<li class='item-song'>" + this.playingSong.get("song_name") + "</li></ul>";
+        /*
+         * <ul><li class="item-artist jp-playlist-current"><span>01.</span>Rudimental</li><li class="item-song">Waiting All Night (feat. Ella Eyre)</li><li class="item-album">Folllow Your Heart | 2013</li></ul>
+         */
+        this.$(".song_title").html("<img src='" + artworkUrl +"'></img>" + artistHTML);
+    }
+});
+
+
 LoginStateView = Backbone.View.extend({
     el: $("#login-state"),
     events: {
@@ -349,11 +396,12 @@ IndexRouter = Backbone.Router.extend({
     initialize: function(){
         this.model = new User();
         this.playingSong = new PlayingSong();
+        this.musicPlayerView = new MusicPlayerView(this.playingSong);
         this.loggedIn = false;
         var self = this;
         this.channelView = new ChannelView(this.model);
         this.songCollection = new SongCollection();
-        this.playListView = new PlayListView(this.model, this.songCollection);
+        this.playListView = new PlayListView(this.model, this.songCollection, this.playingSong);
         this.loginStateView = new LoginStateView(this.model, function(){
             self.channelView.render();
             self.songCollection.fetch();
