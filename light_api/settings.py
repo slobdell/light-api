@@ -137,7 +137,10 @@ AWS_ACCESS_KEY_ID = os.environ["AWS_ACCESS_KEY_ID"]
 AWS_SECRET_ACCESS_KEY = os.environ["AWS_SECRET_ACCESS_KEY"]
 AWS_STORAGE_BUCKET_NAME = "light-api-static"
 
-FACEBOOK_APP_ID = '106163103064771'
+if os.environ.get("I_AM_IN_DEV_ENV"):
+    FACEBOOK_APP_ID = '106163103064771'
+else:
+    FACEBOOK_APP_ID = '630058183801903'
 
 if os.environ.get("I_AM_IN_DEV_ENV"):
     STATIC_URL = '/static/'
