@@ -118,7 +118,7 @@
         }
     });
 
-    var channelDistributor = new ChannelDistributor(CHANNEL_NAME);
+    var channelDistributor = new ChannelDistributor();
 
     var publishKey = 'pub-c-77b610e9-6b6c-4193-85b1-50a3a249d263';
     var subscribeKey = 'sub-c-046d7292-8c71-11e4-8159-02ee2ddab7fe';
@@ -129,48 +129,50 @@
         publish_key: publishKey
     });
     var previousOccupantCount = 0;
+    /** START PUBNUB SUBSCRIBE **/
     pubnub.subscribe({
-    channel: CHANNEL_NAME,
-    message: function(m){
-        /*console.log(m);
-        alert("got a message");
-        */
+        channel: CHANNEL_NAME,
+        message: function(m){
+            /*console.log(m);
+            alert("got a message");
+            */
 
-    },
-    error: function (error) {
-        // Handle error here
-        console.log(JSON.stringify(error));
-    },
-    presence: function(joinObject){
-        var numListeners = joinObject.occupancy - 1;
-        console.log(joinObject);
-        console.log(occupantsInitialState);
-        if(joinObject.action == "join"){
-            if(numListeners === 0){
-                // the javascript app itself will otherwise count as a listener
-                return;
-            }
-            if(occupantsInitialState == numListeners){
-                return; //only want to do this action once
-            }
-            if(occupantsInitialState == -1){
-                occupantsInitialState = numListeners;
-            }
-            channelDistributor.addOccupant();
-            var channelName = channelDistributor.getNextChannelName();
-            pubnub.publish({
-                channel : CHANNEL_NAME,
-                message : {
-                    type: MESSAGE_TYPE_CHANNEL_ASSIGNMENT,
-                    channelName: channelName
+        },
+        error: function (error) {
+            // Handle error here
+            console.log(JSON.stringify(error));
+        },
+        presence: function(joinObject){
+            var numListeners = joinObject.occupancy - 1;
+            console.log(joinObject);
+            console.log(occupantsInitialState);
+            if(joinObject.action == "join"){
+                if(numListeners === 0){
+                    // the javascript app itself will otherwise count as a listener
+                    return;
                 }
-            })
-        } else {
-            channelDistributor.annotateRemoval();
-            // they left
+                if(occupantsInitialState == numListeners){
+                    return; //only want to do this action once
+                }
+                if(occupantsInitialState == -1){
+                    occupantsInitialState = numListeners;
+                }
+                channelDistributor.addOccupant();
+                var channelName = channelDistributor.getNextChannelName();
+                pubnub.publish({
+                    channel : CHANNEL_NAME,
+                    message : {
+                        type: MESSAGE_TYPE_CHANNEL_ASSIGNMENT,
+                        channelName: channelName
+                    }
+                })
+            } else {
+                channelDistributor.annotateRemoval();
+                // they left
+            }
         }
-    }
     });
+    /** END PUBNUB SUBSCRIBE **/
 function getScheduleMs(startable, startTimestamp){
     var scheduleTimestamp = startable.start * 1000;
     var now = new Date().getTime();
