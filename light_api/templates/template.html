@@ -25,6 +25,9 @@
 <link href="{% static 'css/bootstrap.css' %}" media="screen" rel="stylesheet">
 <link href="{% static 'style.css' %}" media="screen" rel="stylesheet">
 
+<!-- pubnub -->
+<script src="http://cdn.pubnub.com/pubnub-3.7.12.min.js"></script>
+
 <!-- Audio Player  -->
 <link href="{% static 'css/jplayer.css' %}" rel="stylesheet">
 <script src="{% static 'js/jquery.jplayer.min.js' %}"></script>
@@ -38,13 +41,10 @@
             cssSelectorAncestor: "#jp_container_1"
         }, [
             {
-                title:"<img src=\"{% static 'images/temp/music-player1.png' %}\" alt='' /><ul><li class='item-artist'><span>01.</span>Rudimental</li><li class='item-song'>Waiting All Night (feat. Ella Eyre)</li><li class='item-album'>Folllow Your Heart | 2013</li></ul>' %}",
-                mp3:"http://www.jplayer.org/audio/mp3/TSP-05-Your_face.mp3",
-                oga:"http://www.jplayer.org/audio/ogg/TSP-05-Your_face.ogg"
             },
         ], {
             swfPath: "js",
-            supplied: "oga, mp3",
+            supplied: "mp3",
             wmode: "window",
             smoothPlayBar: false,
             keyEnabled: false
@@ -214,6 +214,7 @@
     <script type="text/javascript">
         Parse.initialize("{{ parse_app_id }}", "{{ parse_key }}");
     </script>
+    <script type="text/javascript" src="{% static 'js/strober.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/backbone_views.js' %}"></script>
 
     <script>

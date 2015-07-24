@@ -47,7 +47,8 @@ var PlayingSong = Backbone.Model.extend({
             'track_url': "",
             'artwork_url': "",
             'song_name': '',
-            'artist_name': ''
+            'artist_name': '',
+            'analysis_json': {}
         }];
         Backbone.Model.apply(this, attrs);
     }
@@ -112,10 +113,32 @@ PlayListView = Backbone.View.extend({
         this.listenTo(this.model, "change", this.updateState);
         this.listenTo(this.songCollection, "sync", this.render);
         this.listenTo(this.songCollection, "add", this.render);
+        this.listenTo(this.songCollection, "sync", this.setFirstSong);
 
         this.formData = new FormData();
         this.filename = "";
         this.fileUploaded = false;
+        this.firstSongLoaded = false;
+    },
+    setFirstSong: function(){
+        if(this.songCollection.length == 0){
+            return;
+        }
+        if(this.firstSongLoaded){
+            return;
+        }
+
+        var self = this;
+        setTimeout(function(){
+            var selectedSong = self.songCollection.models[0];
+            self.playingSong.set("track_url", selectedSong.get("track_url"));
+            self.playingSong.set("artwork_url", selectedSong.get("artwork_url"));
+            self.playingSong.set("song_name", selectedSong.get("track_name"));
+            self.playingSong.set("artist_name", selectedSong.get("artist_name"));
+            self.playingSong.set("analysis_json", selectedSong.get("analysis_json"));
+            self.playingSong.trigger("methalop");
+            self.firstSongLoaded = true;
+        }, 500);
     },
     songClick: function(evt){
         var idString = evt.target.id;
@@ -135,7 +158,8 @@ PlayListView = Backbone.View.extend({
         this.playingSong.set("artwork_url", selectedSong.get("artwork_url"));
         this.playingSong.set("song_name", selectedSong.get("track_name"));
         this.playingSong.set("artist_name", selectedSong.get("artist_name"));
-        this.playingSong.trigger("change");
+        this.playingSong.set("analysis_json", selectedSong.get("analysis_json"));
+        this.playingSong.trigger("methalop");
         //alert("trigger");
     },
     clickChooseFile: function(){
@@ -159,6 +183,7 @@ PlayListView = Backbone.View.extend({
         var access_token = Parse.User.current().get('access_token');
         this.formData.append('username', username);
         this.formData.append('access_token', access_token);
+        this.$(".upload").addClass("btn-black");
         this.$(".loader").show();
         $.ajax({
             url: '/api/upload_video/',
@@ -172,9 +197,11 @@ PlayListView = Backbone.View.extend({
                 self.$(".upload").show();
                 self.songCollection.add(response);
                 self.$(".loader").hide();
+                self.$(".upload").removeClass("btn-black");
             },
             error: function(data){
                 self.$(".loader").hide();
+                self.$(".upload").removeClass("btn-black");
                 alert("fail")
             }
         });
@@ -248,6 +275,9 @@ ChannelView = Backbone.View.extend({
         };
         this.$el.html(this.template(renderData));
         this.$("input").focus();
+        if(this.model.get("channel_name") !== null){
+            CHANNEL_NAME = this.model.get("channel_name")
+        }
         return this;
     }
 });
@@ -315,22 +345,63 @@ LoginView = Backbone.View.extend({
 MusicPlayerView = Backbone.View.extend({
     el: $("#music-player"),
     events: {
-        "click .jp-play": "clickPlay"
+        "click .jp-play": "clickPlay",
+        "click .jp-pause": "clickPause"
     },
-    clickPlay: function(){
+    clickPause: function(evt){
+        this.audio.pause();
+        this.audio.load();
+        this.togglePlay();
+        stopFlashing();
+    },
+    clickPlay: function(evt){
+        if(this.audio !== null){
+            var self = this;
+            $(this.audio).one("playing", function(){
+                //start the stuff for when the audio has started playing
+                self.audio.pause();
+                startFlashing(self.audio, self.playingSong.get("analysis_json"));
+            });
+            this.audio.play();
+            this.togglePlay();
+        }
+    },
+    togglePlay: function(){
+        if(this.paused){
+            this.$(".jp-play").addClass("jp-pause");
+            this.$(".jp-pause").removeClass("jp-play");
+        } else {
+            this.$(".jp-pause").addClass("jp-play");
+            this.$(".jp-play").removeClass("jp-pause");
+        }
+        this.paused = !this.paused;
+        this.delegateEvents();
     },
     initialize: function(playingSong){
+        this.paused = true;
         this.playingSong = playingSong;
-        this.listenTo(this.playingSong, "change", this.render);
+        this.listenTo(this.playingSong, "methalop", this.render);
+        this.audio = null;
+        if(this.playingSong.get("track_url")){
+            this.audio = new Audio(this.playingSong.get("track_url"));
+        }
+        this.listenTo(this.playingSong, "methalop", this.updateAudioTrack);
+    },
+    updateAudioTrack: function(){
+        if(this.audio !== null){
+            if(!this.paused){
+                this.audio.pause();
+                this.togglePlay();
+                stopFlashing();
+            }
+        }
+        this.audio = new Audio(this.playingSong.get("track_url"));
     },
     render: function(){
         var artworkUrl = this.playingSong.get("artwork_url");
         // TODO move to template
         var artistHTML = "<ul><li class='item-artist jp-playlist-current'>" + this.playingSong.get("artist_name") + "</li>";
         artistHTML += "<li class='item-song'>" + this.playingSong.get("song_name") + "</li></ul>";
-        /*
-         * <ul><li class="item-artist jp-playlist-current"><span>01.</span>Rudimental</li><li class="item-song">Waiting All Night (feat. Ella Eyre)</li><li class="item-album">Folllow Your Heart | 2013</li></ul>
-         */
         this.$(".song_title").html("<img src='" + artworkUrl +"'></img>" + artistHTML);
     }
 });

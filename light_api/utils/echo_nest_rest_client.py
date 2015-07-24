@@ -45,6 +45,13 @@ class EchoNestRestClient(object):
         track_id = response["response"]["track"]["id"]
         response = self._make_get_request(EchoNestRestClient.PROFILE_ENDPOINT, track_id)
         analysis_url = response["response"]["track"]["audio_summary"]["analysis_url"]
-        time.sleep(3)
-        total_analysis = json.loads(requests.get(analysis_url).content)
+        total_analysis = None
+        for num_retries in xrange(3):
+            time.sleep(3)
+            try:
+                total_analysis = json.loads(requests.get(analysis_url).content)
+            except ValueError:
+                pass
+        if total_analysis is None:
+            raise ValueError("Fail")
         return total_analysis
