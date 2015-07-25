@@ -44,11 +44,11 @@ var PLAYLIST_STATES = {
 var PlayingSong = Backbone.Model.extend({
     constructor: function (){
         var attrs = [{
-            'track_url': "",
-            'artwork_url': "",
-            'song_name': '',
-            'artist_name': '',
-            'analysis_json': {}
+            'track_url': "https://s3.amazonaws.com/lobbdawg/audio_files/bensound-scifi.mp3",
+            'artwork_url': "https://s3.amazonaws.com/lobbdawg/audio_files/album_default.jpg",
+            'song_name': 'Moose',
+            'artist_name': 'BenSound.com',
+            'analysis_json': defaultJson
         }];
         Backbone.Model.apply(this, attrs);
     }
@@ -146,6 +146,11 @@ PlayListView = Backbone.View.extend({
         var selectedSong = null;
         if(splitArray[0] === "song"){
             var songId = parseInt(splitArray[1], 10);
+            if(!songId){
+            // FIXME this is pretty hacky...it's weird onclick event handlers for empty strings
+                songId = $($(evt.target)[0]).children()[0].id;
+            }
+
             for(var i=0; i<this.songCollection.length; i++){
                 var model = this.songCollection.models[i];
                 if(model.get("id") === songId){
@@ -242,13 +247,14 @@ ChannelView = Backbone.View.extend({
         this.template = _.template($("#channel-view").html());
         this.editState = CHANNEL_STATES.NO_EDIT;
         this.listenTo(this.model, "sync", this.updateState);
+        this.oldChannel = null;
     },
     save: function(){
         var inputChannel = $("input").val();
         this.model.set("channel_name", inputChannel);
         this.model.save(null, {
             error: function(){
-                alert("Channel name already exists.  Pick a different one.")
+                alert("Someone else already reserved that channel name.  Pick a different one.  Better error message is in the works....");
             }
         });
     },
@@ -258,7 +264,18 @@ ChannelView = Backbone.View.extend({
         } else {
             this.editState = CHANNEL_STATES.NO_EDIT;
         }
+
+        this.updateGlobalPresence();
         this.render();
+    },
+    updateGlobalPresence: function(){
+        if(this.model.get("channel_name") === this.oldChannel){
+            return;
+        }
+        if(this.model.get("channel_name") !== null){
+            beginSubscribe(this.oldChannel, this.model.get("channel_name"));
+        }
+        this.oldChannel = this.model.get("channel_name");
     },
     cancelEdit: function(){
         this.editState = CHANNEL_STATES.NO_EDIT;
@@ -276,7 +293,7 @@ ChannelView = Backbone.View.extend({
         this.$el.html(this.template(renderData));
         this.$("input").focus();
         if(this.model.get("channel_name") !== null){
-            CHANNEL_NAME = this.model.get("channel_name")
+            CHANNEL_NAME = (this.model.get("channel_name") || "").toLowerCase();
         }
         return this;
     }
@@ -386,6 +403,7 @@ MusicPlayerView = Backbone.View.extend({
             this.audio = new Audio(this.playingSong.get("track_url"));
         }
         this.listenTo(this.playingSong, "methalop", this.updateAudioTrack);
+        this.render();
     },
     updateAudioTrack: function(){
         if(this.audio !== null){
@@ -399,6 +417,9 @@ MusicPlayerView = Backbone.View.extend({
     },
     render: function(){
         var artworkUrl = this.playingSong.get("artwork_url");
+        if(!artworkUrl){
+            artworkUrl = 'https://s3.amazonaws.com/lobbdawg/audio_files/album_default.jpg';
+        }
         // TODO move to template
         var artistHTML = "<ul><li class='item-artist jp-playlist-current'>" + this.playingSong.get("artist_name") + "</li>";
         artistHTML += "<li class='item-song'>" + this.playingSong.get("song_name") + "</li></ul>";

@@ -20,8 +20,8 @@ class Song(object):
 
     @classmethod
     def create(cls, user, analysis_json, artwork_url, track_url):
-        artist = analysis_json["meta"]["artist"]
-        filename = analysis_json["meta"]["title"]
+        artist = analysis_json["meta"]["artist"] or "Unknown Artist"
+        filename = analysis_json["meta"]["title"] or "Untitled Song"
         json_str = json.dumps(analysis_json)
         _song = _Song.objects.create(
             user_id=user.id,

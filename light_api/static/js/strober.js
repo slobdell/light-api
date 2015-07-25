@@ -129,50 +129,57 @@
         publish_key: publishKey
     });
     var previousOccupantCount = 0;
-    /** START PUBNUB SUBSCRIBE **/
-    pubnub.subscribe({
-        channel: CHANNEL_NAME,
-        message: function(m){
-            /*console.log(m);
-            alert("got a message");
-            */
-
-        },
-        error: function (error) {
-            // Handle error here
-            console.log(JSON.stringify(error));
-        },
-        presence: function(joinObject){
-            var numListeners = joinObject.occupancy - 1;
-            console.log(joinObject);
-            console.log(occupantsInitialState);
-            if(joinObject.action == "join"){
-                if(numListeners === 0){
-                    // the javascript app itself will otherwise count as a listener
-                    return;
-                }
-                if(occupantsInitialState == numListeners){
-                    return; //only want to do this action once
-                }
-                if(occupantsInitialState == -1){
-                    occupantsInitialState = numListeners;
-                }
-                channelDistributor.addOccupant();
-                var channelName = channelDistributor.getNextChannelName();
-                pubnub.publish({
-                    channel : CHANNEL_NAME,
-                    message : {
-                        type: MESSAGE_TYPE_CHANNEL_ASSIGNMENT,
-                        channelName: channelName
-                    }
-                })
-            } else {
-                channelDistributor.annotateRemoval();
-                // they left
-            }
+    function beginSubscribe(oldChannel, newChannel){
+        if(oldChannel !== null){
+            pubnub.unsubscribe({
+                channel: oldChannel
+            });
         }
-    });
-    /** END PUBNUB SUBSCRIBE **/
+        /** START PUBNUB SUBSCRIBE **/
+        pubnub.subscribe({
+            channel: newChannel,
+            message: function(m){
+                /*console.log(m);
+                alert("got a message");
+                */
+
+            },
+            error: function (error) {
+                // Handle error here
+                console.log(JSON.stringify(error));
+            },
+            presence: function(joinObject){
+                var numListeners = joinObject.occupancy - 1;
+                console.log(joinObject);
+                console.log(occupantsInitialState);
+                if(joinObject.action == "join"){
+                    if(numListeners === 0){
+                        // the javascript app itself will otherwise count as a listener
+                        return;
+                    }
+                    if(occupantsInitialState == numListeners){
+                        return; //only want to do this action once
+                    }
+                    if(occupantsInitialState == -1){
+                        occupantsInitialState = numListeners;
+                    }
+                    channelDistributor.addOccupant();
+                    var channelName = channelDistributor.getNextChannelName();
+                    pubnub.publish({
+                        channel : newChannel,
+                        message : {
+                            type: MESSAGE_TYPE_CHANNEL_ASSIGNMENT,
+                            channelName: channelName
+                        }
+                    })
+                } else {
+                    channelDistributor.annotateRemoval();
+                    // they left
+                }
+            }
+        });
+        /** END PUBNUB SUBSCRIBE **/
+    }
 function getScheduleMs(startable, startTimestamp){
     var scheduleTimestamp = startable.start * 1000;
     var now = new Date().getTime();
