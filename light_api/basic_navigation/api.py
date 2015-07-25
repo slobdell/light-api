@@ -141,6 +141,8 @@ def _upload_artwork(unique_identifier, song_file):
         f.write(song_file.read())
 
     mutagen_file = File(temp_filename)
+    if 'APIC:' not in mutagen_file.tags:
+        return ""
     artwork = mutagen_file.tags['APIC:'].data
     image_file = StringIO()
     image_file.write(artwork)
