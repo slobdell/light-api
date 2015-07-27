@@ -97,7 +97,7 @@
         getChannelForPitch: function(pitchValue){
             /* pitch is between 0 and 12 */
             if(this.numChannels === 0){
-                return this.baseChannelName + "_broadcast";
+                return CHANNEL_NAME + "_broadcast";
             }
             var channelNumber = pitchValue % this.numChannels;
             return CHANNEL_NAME + this.channelNames[channelNumber];
@@ -174,6 +174,7 @@
                     })
                 } else {
                     channelDistributor.annotateRemoval();
+                    occupantsInitialState = -1;
                     // they left
                 }
             }
@@ -196,6 +197,7 @@ function scheduleBar(bar, scheduleMs){
         var channels = channelDistributor.getAllChannels();
         for(var i=0; i<channels.length; i++){
             var channel = channels[i];
+            console.log(channel);
             pubnub.publish({
                 channel : channel,
                 message : {
@@ -215,6 +217,7 @@ function scheduleTatum(tatum, scheduleMs){
         //probably light up just one
         // $("#fillMe").append("tatum " + tatum.start+" <br/>");
         var channel = channelDistributor.getChannelForPitch(tatum.dominantPitch);
+        console.log(channel)
         pubnub.publish({
             channel : channel,
             message : {
@@ -233,6 +236,7 @@ function scheduleBeat(beat, scheduleMs){
     var result = setTimeout(function(){
         //$("#fillMe").append("beat " + beat.start+" <br/>");
         var channels = channelDistributor.getHalfChannels(beat.dominantPitch);
+        console.log(channels);
         for(var i=0; i<channels.length; i++){
             var channel = channels[i];
             pubnub.publish({
@@ -330,6 +334,7 @@ function startFlashing(audio, analysisJson){
     console.log(analysisJson);
     setTimeout(function(){
         audio.play();
+        $("#play-loader").hide();
     }, JITTER_TIME);
     startRead(analysisJson);
 }

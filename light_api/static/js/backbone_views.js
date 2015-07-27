@@ -380,6 +380,7 @@ MusicPlayerView = Backbone.View.extend({
                 startFlashing(self.audio, self.playingSong.get("analysis_json"));
             });
             this.audio.play();
+            $("#play-loader").show();
             this.togglePlay();
         }
     },
