@@ -80,35 +80,8 @@
                         <!-- Website Menu -->
                         <div class="dropdown-wrap boxed-velvet">
                             <ul class="dropdown inner clearfix top-nav">
-                                <li class="menu-level-0"><a href="#"><span>Account</span></a></li>
-                                <li class="menu-level-0"><a href="#"><span>About Us</span></a>
-                                    <ul class="submenu-1">
-                                        <li class="menu-level-1"><a href="#">Portfolio</a></li>
-                                        <li class="menu-level-1"><a href="#">Testimonials</a></li>
-                                        <li class="menu-level-1"><a href="#">Contacts</a>
-                                            <ul class="submenu-2">
-                                                <li class="menu-level-2"><a href="#">Gallery images</a></li>
-                                                <li class="menu-level-2"><a href="#">OneByOne Slider</a></li>
-                                                <li class="menu-level-2"><a href="#">Video in header</a></li>
-                                                <li class="menu-level-2"><a href="#">Image &amp; Video Slider</a></li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="menu-level-0"><a href="#"><span>Settings</span></a>
-                                    <ul class="submenu-1">
-                                        <li class="menu-level-1"><a href="#">Privacy Policy</a></li>
-                                        <li class="menu-level-1"><a href="#">Copyright</a></li>
-                                        <li class="menu-level-1"><a href="#">Terms of Service</a>
-                                            <ul class="submenu-2">
-                                                <li class="menu-level-2"><a href="#">Gallery images</a></li>
-                                                <li class="menu-level-2"><a href="#">OneByOne Slider</a></li>
-                                                <li class="menu-level-2"><a href="#">Video in header</a></li>
-                                                <li class="menu-level-2"><a href="#">Image &amp; Video Slider</a></li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </li>
+                                <li class="menu-level-0"><a href="#"><span>Download App</span></a></li>
+                                <li class="menu-level-0"><a href="#"><span>About Us</span></a></li>
                             </ul>
                         </div>
                         <!--/ Website Menu -->
@@ -123,10 +96,28 @@
                         <!-- Buttons -->
                         <div class="buttons-wrap" style="text-align: center;">
                             <div class="buttons">
-                                <a href="#" class="help btn btn-pagination"><span>What Is This Thing?</span></a>
+                                <a href="#" class="help btn btn-pagination" data-toggle="modal" data-target="#myModal"><span>What Is This Thing?</span></a>
                                 <!-- SBL need to add modal shit here -->
                             </div>
 
+                            <!-- Modal -->
+                            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content" style="background-color: #333;">
+                                    <div class="modal-header" style="border-bottom: 1px solid #444;">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Cymatic Radio</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        Cymatic Radio is a distributed application that allows any number of iOS phones to subscribe to a given music channel.  All of the subscribed phones will strobe their respective LED flashlight in conjunction with the music played on the channel.
+                                    </div>
+                                    <div class="modal-footer" style="border-top: 1px solid #444;">
+
+                                        <a href="#" class="btn btn-pagination" data-dismiss="modal"><span>Close</span></a>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <!--/ Buttons -->
                     </div>

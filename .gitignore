@@ -1,2 +1,6 @@
 .virtualenv
 *.un*
+<<<<<<< 4b4abf0ee47ffb7d467319567e3d4673d76d6e88
+=======
+*.pyc
+>>>>>>> updates

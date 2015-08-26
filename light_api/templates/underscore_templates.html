@@ -40,7 +40,7 @@
                     </p>
                     <% }  else { %>
                         <p>
-                        Grab as many iPhones as you can with the "XXXX" app and subscribe to the channel here.  You'll get a sweet light show that will leave you amped and wanting more.
+                        Grab as many iPhones as you can with the "Cymatic Radio" app and subscribe to the channel here.  You'll get a sweet light show that will leave you amped and wanting more.
                         </p>
                         <a href="#" class="see-more"><span>Get the iOS App</span></a>
                     <% } %>
@@ -81,4 +81,62 @@
 
         </div>
     <% } %>
+</script>
+
+<script type="text/html" id="modal-about">
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="background: #323232;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span style="color: #FFF;" aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Upload a Video</h4>
+                </div>
+                <div class="modal-body" style="max-height: 280px; overflow-y: scroll;">
+                    <div class="row-fluid">
+                        <div class="col-sm-6">
+                            <p>Ensure that:</p>
+                            <ul style="font-size: 14px;">
+                                <li><i style="color: #0A0;" class="icon-checkmark"></i> Video is head on (barbell's angle in the image is 0)</li>
+                                <li><i style="color: #0A0;" class="icon-checkmark"></i> Video is stable</li>
+                                <li><i style="color: #0A0;" class="icon-checkmark"></i> Video is one continuous shot</li>
+                                <li><i style="color: #0A0;" class="icon-checkmark"></i> Don't use so much weight that the bar bends</li>
+                                <li><i style="color: #0A0;" class="icon-checkmark"></i> Use a weight where good form is maintained</li>
+                                <li><i style="color: #0A0;" class="icon-checkmark"></i> Standard Olympic Barbell</li>
+        <li><i style="color: #0A0;" class="icon-checkmark"></i> Entire barbell should fit in the screen</li>
+                                <li><i style="color: #0A0;" class="icon-checkmark"></i> Barbell should be at least half the width of the screen</li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6">
+                            <form action="." method="POST" enctype="multipart/form-data">
+                                <input type="file" id="upfile" name="upfile" type="file" value="upload" style="visibility: hidden;" accept="video/*"/>
+                                <p>
+                                    <%= videoName %>
+                                </p>
+                                <a id="choose-file" style="font-size: 18px;" href="javascript:void(0);" class="button large alt <% if (videoUploaded) { %>cancel<% } %>">
+                                    Choose File
+                                </a>
+                                <p id="uploading-text">
+                                    Uploading...
+                                </p>
+                                <p id="error-area">
+                                    <%= errorMessage %>
+                                </p>
+                            </form>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a id="cancel-button" style="margin-top: 5px; font-size: 18px;" href="javascript:void(0);" class="button large alt cancel">
+                        Cancel
+                    </a>
+                    <a id="upload-video-button-final" style="margin-top: 5px; font-size: 18px;" href="javascript:void(0);" class="button large alt">
+                        Upload
+                    </a>
+                    <img style="width: 30px; display: inline-block; position: relative; margin: 13px;" id="spinner" src="{% static 'img/spinner.gif' %}" />
+                </div>
+            </div>
+        </div>
+    </div>
 </script>

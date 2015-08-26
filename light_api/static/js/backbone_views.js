@@ -119,6 +119,12 @@ PlayListView = Backbone.View.extend({
         this.filename = "";
         this.fileUploaded = false;
         this.firstSongLoaded = false;
+
+        var self = this;
+        this.listenTo(this.songCollection, "request", function(){
+            self.$(".loader").show();
+            self.$(".upload").addClass("btn-black");
+        });
     },
     setFirstSong: function(){
         if(this.songCollection.length == 0){
@@ -240,6 +246,7 @@ ChannelView = Backbone.View.extend({
     events: {
         "click .save": "save",
         "click .edit": "startEdit",
+        "keypress input": "keyPress",
         "click .cancel": "cancelEdit"
     },
     initialize: function(model){
@@ -248,6 +255,11 @@ ChannelView = Backbone.View.extend({
         this.editState = CHANNEL_STATES.NO_EDIT;
         this.listenTo(this.model, "sync", this.updateState);
         this.oldChannel = null;
+    },
+    keyPress: function(evt){
+        if (evt.keyCode === 13){
+            this.save();
+        }
     },
     save: function(){
         var inputChannel = $("input").val();
