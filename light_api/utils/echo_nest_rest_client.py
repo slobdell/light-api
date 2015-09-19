@@ -12,7 +12,6 @@ class EchoNestRestClient(object):
 
     def __init__(self):
         self.api_key = os.environ['ECHO_API_KEY']
-        print self.api_key
         self.consumer_key = os.environ['ECHO_CONSUMER_KEY']
         self.secret_key = os.environ['ECHO_SECRET']
 
@@ -34,9 +33,7 @@ class EchoNestRestClient(object):
     def _make_get_request(self, endpoint, track_id):
         url = "%s%s" % (self.BASE_URL, endpoint)
         url += "&id=%s&api_key=%s" % (track_id, self.api_key)
-        print url
         response = requests.get(url)
-        print response.content
         response.raise_for_status()
         return json.loads(response.content)
 
