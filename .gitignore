@@ -1,3 +1,4 @@
 .virtualenv
 *.un*
 *.pyc
+db.sqlite3
